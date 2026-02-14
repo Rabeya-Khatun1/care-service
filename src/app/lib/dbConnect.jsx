@@ -5,6 +5,7 @@ const uri = process.env.MONGO_URI;
 export const collection =  {
   USER:'users',
   SERVICE:'service',
+  BOOKING:'booking'
 }
 
 const client = new MongoClient(uri, {

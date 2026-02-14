@@ -1,87 +1,173 @@
-"use client"
-import React from 'react';
-import  { useState } from 'react';
+"use client";
+import { postBooking } from "@/app/api/booking/[id]/route";
+import { locations } from "@/data/locations";
+import { useState } from "react";
 
 const BookingForm = ({ service }) => {
+  const rate = service?.price || 800;
+  const vat = 0.15;
 
-   
+  const [region, setRegion] = useState("");
+  const [district, setDistrict] = useState("");
+  const [area, setArea] = useState("");
 
-    const [bookingData, setBookingData] = useState({
-        duration: 1,
-        division: '',
-        district: '',
-        address: ''
-    });
+  const [days, setDays] = useState(1);
+  const [hours, setHours] = useState(1);
 
-    const unitPrice = parseInt(service?.pricing.replace(/\D/g, ""));
-    const totalCost = unitPrice * bookingData.duration;
+  const regions = [...new Set(locations.map(loc => loc.region))];
 
-    const handleConfirm = (e) => {
-        e.preventDefault();
-        const finalData = {
-            ...bookingData,
-            serviceId: service?.serviceId,
-            totalCost,
-            status: 'Pending'
-        };
-        console.log("Saving to Database...", finalData);
-        alert("Booking request submitted! Current Status: Pending");
+  const districts = locations
+    .filter(loc => loc.region === region)
+    .map(loc => loc.district);
+
+  const selectedDistrictData = locations.find(
+    loc => loc.region === region && loc.district === district
+  );
+
+  const areas = selectedDistrictData?.covered_area || [];
+
+  const totalWithoutVat = days * hours * rate;
+  const totalCost = totalWithoutVat + totalWithoutVat * vat;
+
+  const handleBooking = async () => {
+    if (!region || !district || !area) {
+      alert("Please complete location selection");
+      return;
+    }
+
+    const bookingData = {
+      serviceId: service?._id,
+      serviceName: service?.title,
+      duration: { days, hours },
+      location: {
+        region,
+        district,
+        city: selectedDistrictData?.city,
+        area
+      },
+      totalAmount: totalCost,
+      status: "Pending",
+      createdAt: new Date()
     };
 
+    const result = await postBooking(bookingData);
 
+    if(result.success){
+      alert("Booking Confirmed!");
+      setRegion("");
+      setDistrict("");
+      setArea("");
+      setDays(1);
+      setHours(1);
+    } else{
+      alert(result.message);
+    }
+  };
 
-    return (
-            <form onSubmit={handleConfirm} className="space-y-4">
-                {/* Step 1: Duration */}
-                <div className="form-control">
-                    <label className="label">Select Duration (Hours/Days)</label>
-                    <input 
-                        type="number" 
-                        min="1" 
-                        className="input input-bordered" 
-                        value={bookingData.duration}
-                        onChange={(e) => setBookingData({...bookingData, duration: e.target.value})}
-                    />
-                </div>
+  return (
+    <div className="space-y-4">
 
-                {/* Step 2: Location */}
-                <div className="grid grid-cols-2 gap-4">
-                    <select 
-                        className="select select-bordered"
-                        onChange={(e) => setBookingData({...bookingData, division: e.target.value})}
-                        required
-                    >
-                        <option value="">Select Division</option>
-                        <option value="Dhaka">Dhaka</option>
-                        <option value="Chittagong">Chittagong</option>
-                    </select>
+      {/* Duration */}
+      <div className="flex gap-4">
+        <div className="flex flex-col w-1/2">
+          <label className="font-semibold mb-1">Days</label>
+          <input
+            type="number"
+            min="1"
+            value={days}
+            onChange={(e) => setDays(Number(e.target.value))}
+            placeholder="Days"
+            className="border p-2 rounded"
+          />
+        </div>
 
-                    <input 
-                        type="text" 
-                        placeholder="District/City" 
-                        className="input input-bordered"
-                        onChange={(e) => setBookingData({...bookingData, district: e.target.value})}
-                        required
-                    />
-                </div>
+        <div className="flex flex-col w-1/2">
+          <label className="font-semibold mb-1">Hours per Day</label>
+          <input
+            type="number"
+            min="1"
+            value={hours}
+            onChange={(e) => setHours(Number(e.target.value))}
+            placeholder="Hours per day"
+            className="border p-2 rounded"
+          />
+        </div>
+      </div>
 
-                <textarea 
-                    placeholder="Full Address (Area/Street/House)" 
-                    className="textarea textarea-bordered w-full"
-                    onChange={(e) => setBookingData({...bookingData, address: e.target.value})}
-                    required
-                ></textarea>
+      {/* Region */}
+      <div className="flex flex-col">
+        <label className="font-semibold mb-1">Select Division</label>
+        <select
+          value={region}
+          onChange={(e) => {
+            setRegion(e.target.value);
+            setDistrict("");
+            setArea("");
+          }}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select Division</option>
+          {regions.map((reg) => (
+            <option key={reg} value={reg}>
+              {reg}
+            </option>
+          ))}
+        </select>
+      </div>
 
-                {/* Step 3: Total Cost Display */}
-                <div className="p-4 bg-slate-100 rounded-lg flex justify-between items-center">
-                    <span className="font-semibold">Total Cost:</span>
-                    <span className="text-xl font-bold text-blue-600">BDT {totalCost}</span>
-                </div>
+      {/* District */}
+      <div className="flex flex-col">
+        <label className="font-semibold mb-1">Select District</label>
+        <select
+          value={district}
+          onChange={(e) => {
+            setDistrict(e.target.value);
+            setArea("");
+          }}
+          disabled={!region}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select District</option>
+          {districts.map((dist) => (
+            <option key={dist} value={dist}>
+              {dist}
+            </option>
+          ))}
+        </select>
+      </div>
 
-                {/* Step 4: Confirm */}
-                <button type="submit" className="btn btn-primary w-full">Confirm Booking</button>
-            </form>
-    );
+      {/* Area */}
+      <div className="flex flex-col">
+        <label className="font-semibold mb-1">Select Area</label>
+        <select
+          value={area}
+          onChange={(e) => setArea(e.target.value)}
+          disabled={!district}
+          className="border p-2 rounded w-full"
+        >
+          <option value="">Select Area</option>
+          {areas.map((ar) => (
+            <option key={ar} value={ar}>
+              {ar}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Total */}
+      <div className="bg-gray-100 p-4 rounded text-xl font-bold text-primary">
+        Total Cost: ৳ {totalCost}
+      </div>
+
+      <button
+        type="button"
+        onClick={handleBooking}
+        className="bg-primary text-white px-6 py-3 rounded w-full"
+      >
+        Confirm Booking
+      </button>
+    </div>
+  );
 };
 
 export default BookingForm;

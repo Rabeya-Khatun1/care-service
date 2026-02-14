@@ -1,7 +1,17 @@
 import { services } from '@/data/service';
 import BookingForm from '@/app/Components/form/BookingForm';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { redirect } from "next/navigation";
+
 
 const BookingPage =async ({ params }) => {
+
+     const session = await getServerSession(authOptions);
+console.log("SESSION:", session); 
+    if (!session) {
+        redirect("/login"); 
+    }
 
     const { id } = await (params);
     const service = services.find(s => s.serviceId === id);
