@@ -3,6 +3,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = process.env.MONGO_URI;
 
 export const collection =  {
+  USER:'users',
   SERVICE:'service',
 }
 

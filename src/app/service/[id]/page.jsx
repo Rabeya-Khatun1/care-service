@@ -1,5 +1,6 @@
 import { services } from '@/data/service';
 import { CheckCircle, Clock, Tag } from 'lucide-react'; 
+import Link from 'next/link';
 import React from 'react';
 
 const ServiceDetails = async ({ params }) => {
@@ -58,9 +59,11 @@ const ServiceDetails = async ({ params }) => {
                             <p className="text-gray-500 text-sm uppercase tracking-wider">Pricing Plan</p>
                             <p className="text-3xl font-bold text-primary">{service.pricing}</p>
                         </div>
-                        <button className="btn btn-primary btn-lg px-10 rounded-full shadow-lg hover:scale-105 transition-transform">
-                            Book This Service
-                        </button>
+                       <Link href={`/booking/${service.serviceId}`}>
+                            <button className="btn btn-primary btn-lg px-10 rounded-full shadow-lg hover:scale-105 transition-transform">
+                                Book This Service
+                            </button>
+                        </Link>
                     </div>
                 </div>
             </div>
