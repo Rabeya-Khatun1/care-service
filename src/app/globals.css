@@ -1,27 +1,44 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* Fixed colors for light theme */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background and text */
+  --background: #ffffff;      /* White background */
+  --foreground: #171717;      /* Dark text */
+
+  /* Primary color */
+  --color-primary: #26de81;   /* Primary green */
+  --color-primary-content: #ffffff; /* Button/text on primary */
+
+  /* Fonts (optional) */
+  --font-sans: var(--font-geist-sans, Arial, Helvetica, sans-serif);
+  --font-mono: var(--font-geist-mono, monospace);
 }
 
+/* DaisyUI inline theme */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--color-primary);
+  --color-primary-content: var(--color-primary-content);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
+/* Force light theme even if user prefers dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #171717;
+    --color-primary: #26de81;
+    --color-primary-content: #ffffff;
   }
 }
 
+/* Apply globally */
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
 }

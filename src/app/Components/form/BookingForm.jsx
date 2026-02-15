@@ -7,29 +7,35 @@ const BookingForm = ({ service }) => {
   const rate = service?.price || 800;
   const vat = 0.15;
 
+  // User inputs
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+
+  // Location & duration
   const [region, setRegion] = useState("");
   const [district, setDistrict] = useState("");
   const [area, setArea] = useState("");
-
   const [days, setDays] = useState(1);
   const [hours, setHours] = useState(1);
 
+  // Location data
   const regions = [...new Set(locations.map(loc => loc.region))];
-
   const districts = locations
     .filter(loc => loc.region === region)
     .map(loc => loc.district);
-
   const selectedDistrictData = locations.find(
     loc => loc.region === region && loc.district === district
   );
-
   const areas = selectedDistrictData?.covered_area || [];
 
   const totalWithoutVat = days * hours * rate;
   const totalCost = totalWithoutVat + totalWithoutVat * vat;
 
   const handleBooking = async () => {
+    if (!name || !email) {
+      alert("Please enter your name and email");
+      return;
+    }
     if (!region || !district || !area) {
       alert("Please complete location selection");
       return;
@@ -38,6 +44,8 @@ const BookingForm = ({ service }) => {
     const bookingData = {
       serviceId: service?._id,
       serviceName: service?.title,
+      userName: name,
+      userEmail: email,
       duration: { days, hours },
       location: {
         region,
@@ -54,6 +62,9 @@ const BookingForm = ({ service }) => {
 
     if(result.success){
       alert("Booking Confirmed!");
+      // Reset form
+      setName("");
+      setEmail("");
       setRegion("");
       setDistrict("");
       setArea("");
@@ -67,9 +78,25 @@ const BookingForm = ({ service }) => {
   return (
     <div className="space-y-4">
 
-      {/* Duration */}
+      {/* User Info & Duration */}
       <div className="flex gap-4">
         <div className="flex flex-col w-1/2">
+          <label className="font-semibold mb-1">Name</label>
+          <input
+            type="text"
+            placeholder="Your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="border p-2 rounded"
+          />
+          <label className="font-semibold mb-1">Email</label>
+          <input
+            type="email"
+            placeholder="Your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="border p-2 rounded"
+          />
           <label className="font-semibold mb-1">Days</label>
           <input
             type="number"
@@ -108,9 +135,7 @@ const BookingForm = ({ service }) => {
         >
           <option value="">Select Division</option>
           {regions.map((reg) => (
-            <option key={reg} value={reg}>
-              {reg}
-            </option>
+            <option key={reg} value={reg}>{reg}</option>
           ))}
         </select>
       </div>
@@ -129,9 +154,7 @@ const BookingForm = ({ service }) => {
         >
           <option value="">Select District</option>
           {districts.map((dist) => (
-            <option key={dist} value={dist}>
-              {dist}
-            </option>
+            <option key={dist} value={dist}>{dist}</option>
           ))}
         </select>
       </div>
@@ -147,9 +170,7 @@ const BookingForm = ({ service }) => {
         >
           <option value="">Select Area</option>
           {areas.map((ar) => (
-            <option key={ar} value={ar}>
-              {ar}
-            </option>
+            <option key={ar} value={ar}>{ar}</option>
           ))}
         </select>
       </div>
