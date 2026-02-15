@@ -2,6 +2,7 @@
 import { signIn } from 'next-auth/react';
 import { useRouter } from "next/navigation";
 import React from 'react';
+import SocialLogin from '../buttons/SocialLogin';
 
 const LoginForm = () => {
 
@@ -31,7 +32,11 @@ const LoginForm = () => {
                 <input name="email" type="email" placeholder="Email" className="input input-bordered w-full" required />
                 <input name="password" type="password" placeholder="Password" className="input input-bordered w-full" required />
                 <button type="submit" className="btn btn-primary w-full">Login</button>
+                        <div className='divider'></div>
+         <SocialLogin></SocialLogin>
                 <p className="text-sm mt-2">Don't have an account? <a href="/register" className="text-blue-600 font-bold">Register here</a></p>
+         
+
             </form>
     );
 };
