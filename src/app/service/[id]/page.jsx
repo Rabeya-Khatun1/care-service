@@ -3,7 +3,7 @@ import Link from 'next/link';
 import React from 'react';
 
 export async function generateMetadata({ params }) {
-  const { id } = params;
+  const { id } =await params;
   const service = services.find((item) => item.serviceId === id);
 
   if (!service) {
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
 }
 
 const ServiceDetails = async ({ params }) => {
-  const { id } = params;
+  const { id } = await params;
   const service = services.find((item) => item.serviceId === id);
 
   if (!service) {

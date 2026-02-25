@@ -19,7 +19,7 @@ export default async function MyBookingsPage() {
   if (!session) redirect("/login");
 
   let bookings = await getBookings(session.user.email);
-
+console.log("useremail is", session.user.email)
   bookings = bookings.map((b) => ({
     ...b,
     _id: b._id.toString(),

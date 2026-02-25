@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 const BookingPage =async ({ params }) => {
 
      const session = await getServerSession(authOptions);
-console.log("SESSION:", session); 
+     console.log('sesseion', session)
     if (!session) {
         redirect("/login"); 
     }
@@ -18,11 +18,14 @@ console.log("SESSION:", session);
 
 
     return (
-        <div className="max-w-xl mx-auto my-10 p-6 bg-white shadow-2xl rounded-2xl">
-            <h2 className="text-2xl font-bold mb-4">Booking: {service?.title}</h2>
-            
-     <BookingForm service={service}></BookingForm>
-        </div>
+ <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+  <div className="w-full max-w-xl p-8 shadow-2xl rounded-2xl bg-white space-y-6">
+    <h2 className="text-2xl font-bold mb-6 text-center">{service?.title}</h2>
+
+    {/* Form content */}
+    <BookingForm service={service} />
+  </div>
+</div>
     );
 };
 

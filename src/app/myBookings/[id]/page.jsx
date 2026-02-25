@@ -11,7 +11,7 @@ const statusStyles = {
 };
 
 export default async function BookingDetails({ params }) {
-  const { id } = params;
+  const { id } =await params;
 
   if (!ObjectId.isValid(id)) return notFound();
 
